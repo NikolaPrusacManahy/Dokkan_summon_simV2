@@ -105,7 +105,7 @@ void performSummon()
 					"You have closed the program" << std::endl;
 				break;
 			}
-			else
+			else if (confirm != "box")
 			{
 				// Error check
 				std::cout << "ERROR! You have to type (yes or no) " << std::endl;
@@ -118,9 +118,8 @@ void performSummon()
 				pityCount = 3;
 			}
 
-		} while (ds != 0);
+		} while (ds > 0);
 
-		// Clean inventory when maximun reached
 
 		// Add a gap and display on the user's screen that there is no currency left to continue
 		if (ds == 0)		// If the amount is very low
@@ -178,7 +177,7 @@ void PerformDfSummon(std::string t_confirm, int t_pity)
 		{
 			character = gettingSSR();// Call a SRR unit
 			amount_ssr++;
-			std::to_string(unitsArray[step]) = character;
+			unitsArray[step] = character;
 			boxAmount++;		// increase the player's box each time a unit has been summoned
 		}
 
@@ -192,13 +191,13 @@ void PerformDfSummon(std::string t_confirm, int t_pity)
 				{
 					character = gettingPITY();  // Call a featured unit
 					amount_Featured++;
-					std::to_string(unitsArray[step]) = character;
+					unitsArray[step] = character;
 					boxAmount++;		// increase the player's box each time a unit has been summoned
 				}
 				else
 				{
 					character = gettingSSR();
-					std::to_string(unitsArray[step]) = character;
+					unitsArray[step] = character;
 					boxAmount++;		// increase the player's box each time a unit has been summoned
 					amount_ssr++;
 				}
@@ -208,7 +207,7 @@ void PerformDfSummon(std::string t_confirm, int t_pity)
 		{
 			character = gettingMAIN();		// Call the main unit
 			amount_main++;
-			std::to_string(unitsArray[step]) = character;
+			unitsArray[step] = character;
 			boxAmount++;		// increase the player's box each time a unit has been summoned
 		}
 
@@ -353,6 +352,12 @@ std::string gettingMAIN()
 
 void playerBox()
 {
+	const std::string RED = "\033[31m";
+	const std::string GREEN = "\033[32m";
+	const std::string BLUE = "\033[34m";
+	const std::string PURPLE = "\033[35m";			// Colour to assossiate with the units
+	const std::string RESET = "\033[0m";
+
 	// variables
 	std::string erase = "";
 
@@ -360,6 +365,6 @@ void playerBox()
 
 	for (int index = 0; index < boxAmount; index++)
 	{
-		std::cout << std::to_string(unitsArray[index]) << std::endl;
+		std::cout << unitsArray[index] << std::endl;
 	}
 }
