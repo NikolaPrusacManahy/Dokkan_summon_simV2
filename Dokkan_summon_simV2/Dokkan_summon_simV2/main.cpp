@@ -7,9 +7,9 @@
 // It will simulate a gacha system with probabilities to get certain units
 // Gambling System
 //----------------------------------------------------------------------------------
-// VERSION --> ALPHA
+// VERSION --> BETA
 // ----------------------------------------------------------------------------------
-// Update log --> 
+// Update log --> Box feature to be added
 // ---------------------------------------------------------------------------------
 // LIST OF CORRECTION TO BE DONE!!!!!
 	// 

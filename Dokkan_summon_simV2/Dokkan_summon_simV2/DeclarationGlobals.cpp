@@ -1,7 +1,7 @@
 #include "globals.h"
 #include<string>
 
-const int MAX_BOX = 50;				// the amount of units the box can store
+const int MAX_BOX = 150;				// the amount of units the box can store
 int boxAmount = 0;			// User's units amount in the box
 int unitsArray[MAX_BOX];				// unit's list array
 
