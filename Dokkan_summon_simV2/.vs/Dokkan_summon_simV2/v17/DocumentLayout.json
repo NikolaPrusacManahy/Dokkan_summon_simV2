@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{90302512-3C5A-4DAA-B888-7F1C983BF7B6}|Dokkan_summon_simV2\\Dokkan_summon_simV2.vcxproj|C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\Summon.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{90302512-3C5A-4DAA-B888-7F1C983BF7B6}|Dokkan_summon_simV2\\Dokkan_summon_simV2.vcxproj|solutionrelative:Dokkan_summon_simV2\\Summon.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{90302512-3C5A-4DAA-B888-7F1C983BF7B6}|Dokkan_summon_simV2\\Dokkan_summon_simV2.vcxproj|C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\globals.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{90302512-3C5A-4DAA-B888-7F1C983BF7B6}|Dokkan_summon_simV2\\Dokkan_summon_simV2.vcxproj|solutionrelative:Dokkan_summon_simV2\\globals.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{90302512-3C5A-4DAA-B888-7F1C983BF7B6}|Dokkan_summon_simV2\\Dokkan_summon_simV2.vcxproj|C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\DeclarationGlobals.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{90302512-3C5A-4DAA-B888-7F1C983BF7B6}|Dokkan_summon_simV2\\Dokkan_summon_simV2.vcxproj|solutionrelative:Dokkan_summon_simV2\\DeclarationGlobals.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{90302512-3C5A-4DAA-B888-7F1C983BF7B6}|Dokkan_summon_simV2\\Dokkan_summon_simV2.vcxproj|C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{90302512-3C5A-4DAA-B888-7F1C983BF7B6}|Dokkan_summon_simV2\\Dokkan_summon_simV2.vcxproj|solutionrelative:Dokkan_summon_simV2\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
@@ -14,19 +26,61 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "globals.h",
+              "DocumentMoniker": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\globals.h",
+              "RelativeDocumentMoniker": "Dokkan_summon_simV2\\globals.h",
+              "ToolTip": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\globals.h",
+              "RelativeToolTip": "Dokkan_summon_simV2\\globals.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-01-29T17:32:00.741Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DeclarationGlobals.cpp",
+              "DocumentMoniker": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\DeclarationGlobals.cpp",
+              "RelativeDocumentMoniker": "Dokkan_summon_simV2\\DeclarationGlobals.cpp",
+              "ToolTip": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\DeclarationGlobals.cpp",
+              "RelativeToolTip": "Dokkan_summon_simV2\\DeclarationGlobals.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-01-29T17:32:55.785Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "main.cpp",
               "DocumentMoniker": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\main.cpp",
               "RelativeDocumentMoniker": "Dokkan_summon_simV2\\main.cpp",
               "ToolTip": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\main.cpp",
               "RelativeToolTip": "Dokkan_summon_simV2\\main.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAAAAAAA",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAowB0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-01-29T17:09:17.485Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Summon.cpp",
+              "DocumentMoniker": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\Summon.cpp",
+              "RelativeDocumentMoniker": "Dokkan_summon_simV2\\Summon.cpp",
+              "ToolTip": "C:\\Users\\C00309098\\Desktop\\v2Remade\\Dokkan_summon_simV2\\Dokkan_summon_simV2\\Summon.cpp",
+              "RelativeToolTip": "Dokkan_summon_simV2\\Summon.cpp",
+              "ViewState": "AQIAADMAAAAAAAAAAAAjwEgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-01-29T17:24:49.072Z",
               "IsPinned": true,
               "EditorCaption": ""
             }

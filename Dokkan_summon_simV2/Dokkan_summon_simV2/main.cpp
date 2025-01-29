@@ -20,13 +20,45 @@
 #include<string>
 
 // list of functions
-
+void performSummon();		// does the summon procedure
 
 
 int main()
 {
+	// randomize seed
+	srand(time(nullptr));
 
+	// variables
+	int bannerType = 0;
 
+	do
+	{
+		std::cout << "-----------------BANNER SELECTION-----------------" << std::endl
+			<< "Please select a banner type by inputing the corresponding number." << std::endl
+			<<  "1. DDF TEQ Super Buu (Gohan Absorbed) " << std::endl <<
+				"2. Exit" << std::endl <<
+				"3. (comming soon)" << std::endl;
+		std::cin >> bannerType;
+
+		if (bannerType <= 0 || bannerType > 2)		// Error check if the user's enter a wrong number
+		{
+			std::cout << "--------------------------------------------------"
+				<< std::endl <<
+				"ERROR! You have entered a number that is not on the list." << std::endl <<
+				"Please enter a correct number." << std::endl <<
+				"---------------------------------------------------------" <<
+				std::endl;
+		}
+
+		if (bannerType == 1)
+		{
+			// function call to start summoning
+			performSummon();		// does the summon procedure
+		}
+	} while (bannerType !=2);		// Repeat if not correct or stop program
+
+	// exit message
+	std::cout << "You have successfully closed the program :)" << std::endl;
 
 
 	system("pause");
