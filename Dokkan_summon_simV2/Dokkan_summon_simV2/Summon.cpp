@@ -1,137 +1,217 @@
 /// <summary>
-/// This ccp file execute the summoning procedure and output results of the summon
+/// This cpp file executes the summoning procedure and outputs the results of the summon
 /// Nikola Prusac Manahy
 /// C00309098
 
 #include<iostream>
 #include<string>
+#include<algorithm>
+#include<cctype>
+#include<iomanip>
 #include "globals.h"
 
-
 // list of functions
-void PerformDfSummon(std::string t_confirm, int t_pity);		// rate system and get units
-std::string gettingSR();										// Get a SR
-std::string gettingR();											// Get a R
-std::string gettingSSR();										// Get a SSR
-std::string gettingPITY();										// Getting a featured unit
-std::string gettingMAIN();										// Getting the main unit
+void PerformDfSummon(std::string t_confirm, int t_pity);                // rate system and get units
+std::string gettingSR();                                                                                // Get a SR
+std::string gettingR();                                                                                 // Get a R
+std::string gettingSSR();                                                                               // Get a SSR
+std::string gettingPITY();                                                                              // Getting a featured unit
+std::string gettingMAIN();                                                                              // Getting the main unit
 
-void playerBox();										// opens the player's inventory
+void playerBox();                                                                               // opens the player's inventory
 
+namespace
+{
+        std::string toLowerCopy(const std::string& value)
+        {
+                std::string lowered = value;
+                std::transform(lowered.begin(), lowered.end(), lowered.begin(), [](unsigned char ch)
+                        {
+                                return static_cast<char>(std::tolower(ch));
+                        });
+                return lowered;
+        }
+
+        void showSummonDashboard(int ds, int pityCount, int redCoins)
+        {
+                const std::string CYAN = "\033[36m";
+                const std::string RESET = "\033[0m";
+                const std::string BOLD = "\033[1m";
+                const std::string GOLD = "\033[33m";
+
+                std::cout << CYAN;
+                std::cout << "\n╔══════════════════════════════════════════════════════════╗" << std::endl;
+                std::cout << "║" << BOLD << "                    SUMMON CONTROL PANEL                   " << RESET << CYAN << "║" << std::endl;
+                std::cout << "╠══════════════════════════════════════════════════════════╣" << std::endl;
+                std::cout << "║  Dragon Stones : " << std::setw(6) << ds << "                               ║" << std::endl;
+                std::cout << "║  Featured Pity  : " << std::setw(6) << pityCount << " multi(s)                      ║" << std::endl;
+                if (redCoins >= 200)
+                {
+                        std::cout << "║  Red Coins      : " << GOLD << std::setw(6) << redCoins << RESET << CYAN << "  (Main unit available!) ║" << std::endl;
+                }
+                else
+                {
+                        std::cout << "║  Red Coins      : " << std::setw(6) << redCoins << "                               ║" << std::endl;
+                }
+                std::cout << "╚══════════════════════════════════════════════════════════╝" << RESET << std::endl;
+        }
+
+        void displayRedCoinPrompt()
+        {
+                const std::string BLUE = "\033[34m";
+                const std::string RED = "\033[31m";
+                const std::string RESET = "\033[0m";
+
+                std::cout << RED << "You have enough Red Coins to purchase the main unit!" << RESET << std::endl;
+                std::cout << BLUE << "Type 'Main' to exchange 200 coins, or continue summoning (yes/no/box)." << RESET << std::endl;
+        }
+
+        void displaySummonResultsHeader()
+        {
+                const std::string CYAN = "\033[36m";
+                const std::string RESET = "\033[0m";
+
+                std::cout << CYAN;
+                std::cout << "\n╔════════════════════════════ Summon Results ═══════════════════════════╗" << std::endl;
+                std::cout << "║ Slot │ Unit                                                       ║" << std::endl;
+                std::cout << "╠══════╪════════════════════════════════════════════════════════════╣" << RESET << std::endl;
+        }
+
+        void displaySummonResult(int slot, const std::string& character)
+        {
+                const std::string CYAN = "\033[36m";
+                const std::string RESET = "\033[0m";
+
+                std::cout << CYAN;
+                std::cout << "║  " << std::setw(2) << slot << "  │ " << RESET << character << CYAN << " ║" << std::endl;
+        }
+
+        void displaySummonResultsFooter()
+        {
+                const std::string CYAN = "\033[36m";
+                const std::string RESET = "\033[0m";
+
+                std::cout << CYAN << "╚══════╧════════════════════════════════════════════════════════════╝" << RESET << std::endl;
+        }
+
+        void displaySummary()
+        {
+                const std::string MAGENTA = "\033[35m";
+                const std::string RESET = "\033[0m";
+
+                std::cout << MAGENTA;
+                std::cout << "\n╔═════════════════════════════════ Session Summary ═════════════════════════════╗" << std::endl;
+                std::cout << "║  Main Units Obtained      : " << std::setw(4) << amount_main << "                                         ║" << std::endl;
+                std::cout << "║  Featured Units Obtained  : " << std::setw(4) << amount_Featured << "                                         ║" << std::endl;
+                std::cout << "║  SSR Units Obtained       : " << std::setw(4) << amount_ssr << "                                         ║" << std::endl;
+                std::cout << "║  SR Units Obtained        : " << std::setw(4) << amount_sr << "                                         ║" << std::endl;
+                std::cout << "║  R Units Obtained         : " << std::setw(4) << amount_r << "                                         ║" << std::endl;
+                std::cout << "╚══════════════════════════════════════════════════════════════════════════════╝" << RESET << std::endl;
+        }
+}
 
 // main function
 void performSummon()
 {
-	const std::string RED = "\033[31m";
-	const std::string GREEN = "\033[32m";
-	const std::string BLUE = "\033[34m";
-	const std::string PURPLE = "\033[35m";			// Colour to assossiate with the units
-	const std::string RESET = "\033[0m";
+        const std::string RED = "\033[31m";
+        const std::string GREEN = "\033[32m";
+        const std::string BLUE = "\033[34m";
+        const std::string CYAN = "\033[36m";
+        const std::string BOLD = "\033[1m";
+        const std::string RESET = "\033[0m";
 
-	// Variables
-	std::string confirm = "";	// Confirmation from the user (Yes/No)
+        // Variables
+        std::string confirm = "";       // Confirmation from the user (Yes/No)
 
-	int pity = 0;				// build pity if the user spent 150 dragon stones (repeatable)
-	int pityCount = 3;			// Show the amount of summon required to get the pity unit
-	int mainUnit = 0;			// The user will get the main unit when the amount of summons is 20
-	int redCoins = 0;			// Countdown before getting the main unit
-	int ds = 0;					// dragon stones variables
+        int pity = 0;                           // build pity if the user spent 150 dragon stones (repeatable)
+        int pityCount = 3;                      // Show the amount of summon required to get the pity unit
+        int mainUnit = 0;                       // The user will get the main unit when the amount of summons is 20
+        int redCoins = 0;                       // Countdown before getting the main unit
+        int ds = 0;                             // dragon stones variables
 
-	// ask the user how many Dragon stone they want (currencies)
-	std::cout << "Please enter the amount of Dragon stones you want: ";
-	std::cin >> ds;
+        // ask the user how many Dragon stone they want (currencies)
+        std::cout << CYAN << "\n╔═════════════════════════════ Dragon Stone Dispenser ═════════════════════════════╗" << std::endl;
+        std::cout << "║  How many Dragon Stones do you wish to materialise for this session?           ║" << std::endl;
+        std::cout << "╚═══════════════════════════════════════════════════════════════════════════════╝" << RESET << std::endl;
+        std::cout << BOLD << "Enter amount: " << RESET;
+        std::cin >> ds;
 
-	
-		do
-		{
-			std::cout << "----------------------------------------------" << std::endl
-				<< "Your box contain " << boxAmount << " units." << std::endl
-				<< "If you want to check your own units inventory enter: (box)" << std::endl
-				<< "Do you want to perform the summon? (Yes/No)" << std::endl
-				<< "Amount of Dragon Stones: " << ds << std::endl
-				<< "Guaranted Featured unit in " << pityCount << " summons" << std::endl;
+        do
+        {
+                showSummonDashboard(ds, pityCount, redCoins);
+                if (redCoins >= 200)
+                {
+                        displayRedCoinPrompt();
+                }
+                std::cout << BOLD << "Enter 'yes' to summon, 'no' to leave, 'box' to review your units: " << RESET;
+                std::cin >> confirm;
 
+                std::string loweredConfirm = toLowerCopy(confirm);
 
-				if (redCoins <= 190)
-				{
-					std::cout << "Red coins amount: " << redCoins << std::endl;
-					std::cin >> confirm;
+                if (loweredConfirm == "box")
+                {
+                        playerBox();
+                        continue;
+                }
 
-					if (confirm == "box")
-					{
-						playerBox();
-					}
-				}
-				else if (redCoins >= 200)	// if near to pity
-				{
-					std::cout << GREEN << "Red coins amount: " << redCoins << RESET << std::endl;
-					std::cout << RED << "If you want to buy the main unit, Please enter 'Main' or " << BLUE << "continue your summons(yes / no)" << RESET << std::endl;
-					std::cin >> confirm;
+                if (loweredConfirm == "main")
+                {
+                        if (redCoins >= 200)
+                        {
+                                redCoins -= 200;
+                                PerformDfSummon(confirm, pity);
+                        }
+                        else
+                        {
+                                std::cout << RED << "You do not have enough Red Coins yet." << RESET << std::endl;
+                        }
+                        continue;
+                }
 
-					// Give the user another option to purchase the main unit
-					if (confirm == "main" || confirm == "Main")
-					{
-						redCoins -= 200;
-						PerformDfSummon(confirm,pity);
-					}
-					
-					if (confirm == "box")
-					{
-						playerBox();
-					}
+                if (loweredConfirm == "no")
+                {
+                        std::cout << BLUE << "Summon session ended. See you next time!" << RESET << std::endl;
+                        break;
+                }
 
-				}
+                if (loweredConfirm != "yes")
+                {
+                        std::cout << RED << "Please respond with yes, no, box, or main." << RESET << std::endl;
+                        continue;
+                }
 
+                if (ds < 50)
+                {
+                        std::cout << RED << "You do not have enough Dragon Stones for another summon." << RESET << std::endl;
+                        break;
+                }
 
-			if (confirm == "no" || confirm == "No")
-			{
-				break;
-			}
-			// Send the user to the summon screen
-			if (confirm == "Yes" || confirm == "yes")
-			{
-				pity += 50;				// Build the pity for the user
-				pityCount -= 1;			// Reduce the number so the DOKKAN FEST is Obtained at 0
-				mainUnit += 50;			// Build main unit pity
-				redCoins += 10;			// the Main unit is Obtained at 200 if player wants
+                pity += 50;                             // Build the pity for the user
+                pityCount -= 1;                 // Reduce the number so the DOKKAN FEST is Obtained at 0
+                mainUnit += 50;                 // Build main unit pity
+                redCoins += 10;                 // the Main unit is Obtained at 200 if player wants
 
-				PerformDfSummon(confirm, pity);
-				// use an amount of currency everytime the user summon
-				ds -= 50;		// Use dragon stones
-			}
-			else if (confirm == "No" || confirm == "no" && confirm != "box")
-			{
-				std::cout << std::endl <<
-					"You have closed the program" << std::endl;
-				break;
-			}
-			else if (confirm != "box")
-			{
-				// Error check
-				std::cout << "ERROR! You have to type (yes or no) " << std::endl;
-				continue;
-			}
+                PerformDfSummon(confirm, pity);
+                // use an amount of currency everytime the user summon
+                ds -= 50;               // Use dragon stones
 
-			if (pity == 150)		// Reset pity and pity counting
-			{
-				pity = 0;
-				pityCount = 3;
-			}
+                if (pity == 150)                // Reset pity and pity counting
+                {
+                        pity = 0;
+                        pityCount = 3;
+                }
 
-		} while (ds > 0);
+        } while (ds > 0);
 
-
-		// Add a gap and display on the user's screen that there is no currency left to continue
-		if (ds == 0)		// If the amount is very low
-		{
-			std::cout << std::endl << RED <<
-				"You have " << ds << " Dragon Stone left" << RESET << std::endl;
-		}
-		else
-		{
-			std::cout << std::endl <<
-				"You have " << ds << " Dragon Stone left" << std::endl;
-		}
+        // Add a gap and display on the user's screen that there is no currency left to continue
+        if (ds <= 0)
+        {
+                std::cout << std::endl << RED << "You have no Dragon Stones left." << RESET << std::endl;
+        }
+        else
+        {
+                std::cout << std::endl << GREEN << "You have " << ds << " Dragon Stones left." << RESET << std::endl;
+        }
 }
 
 
@@ -140,162 +220,159 @@ void performSummon()
 // rate system to get units
 void PerformDfSummon(std::string t_confirm, int t_pity)
 {
-	// Variables
-	std::string character = "";			// These are the characters that the user will get in order
-	int step;							// Number that need to reach 10 
+        // Variables
+        std::string character = "";                     // These are the characters that the user will get in order
+        int step;                                                       // Number that need to reach 10
 
-	int randomNum = 0;					// Number generated randomly
+        int randomNum = 0;                                      // Number generated randomly
 
-	// If the user has bought the main unit by red coins
-	if (t_confirm == "Main" || t_confirm == "main")
-	{
-		character = gettingMAIN();		// Call the main unit
-		std::cout << "You have bought the main unit: " << character << std::endl;
-		amount_main++;
-	}
+        // If the user has bought the main unit by red coins
+        if (t_confirm == "Main" || t_confirm == "main")
+        {
+                character = gettingMAIN();              // Call the main unit
+                std::cout << "You have bought the main unit: " << character << std::endl;
+                amount_main++;
+                displaySummary();
+                return;
+        }
 
-	for (step = 0; step <= 9; step++)
-	{
-		if (t_confirm == "Main" || t_confirm == "main")
-		{
-			break;
-		}
-		// Generate a random number to set the user's chance to get a unit (1-100)
-		randomNum = (rand() % 101) + 1;
+        displaySummonResultsHeader();
 
-		if (randomNum >= 1 && randomNum <= 59 && step <= 8)		// Getting a SR unit
-		{
-			character = gettingSR();// Call SR unit
-			amount_sr++;
-		}
-		else if (randomNum >= 60 && randomNum <= 89 && step <= 8)		// getting a R unit
-		{
-			character = gettingR();// Call R unit
-			amount_r++;
-		}
-		else if (step <= 8)
-		{
-			character = gettingSSR();// Call a SRR unit
-			amount_ssr++;
-			unitsArray[step] = character;
-			boxAmount++;		// increase the player's box each time a unit has been summoned
-		}
+        for (step = 0; step <= 9; step++)
+        {
+                // Generate a random number to set the user's chance to get a unit (1-100)
+                randomNum = (rand() % 101) + 1;
+
+                if (randomNum >= 1 && randomNum <= 59 && step <= 8)             // Getting a SR unit
+                {
+                        character = gettingSR();// Call SR unit
+                        amount_sr++;
+                }
+                else if (randomNum >= 60 && randomNum <= 89 && step <= 8)               // getting a R unit
+                {
+                        character = gettingR();// Call R unit
+                        amount_r++;
+                }
+                else if (step <= 8)
+                {
+                        character = gettingSSR();// Call a SRR unit
+                        amount_ssr++;
+                        unitsArray[step] = character;
+                        boxAmount++;            // increase the player's box each time a unit has been summoned
+                }
 
 
-		// Character number 10 is always a SSR
-		if (t_confirm != "Main")
-		{
-			if (step == 9)
-			{
-				if (t_pity == 150)
-				{
-					character = gettingPITY();  // Call a featured unit
-					amount_Featured++;
-					unitsArray[step] = character;
-					boxAmount++;		// increase the player's box each time a unit has been summoned
-				}
-				else
-				{
-					character = gettingSSR();
-					unitsArray[step] = character;
-					boxAmount++;		// increase the player's box each time a unit has been summoned
-					amount_ssr++;
-				}
-			}
-		}
-		else if (step == 9 && t_confirm != "Main")
-		{
-			character = gettingMAIN();		// Call the main unit
-			amount_main++;
-			unitsArray[step] = character;
-			boxAmount++;		// increase the player's box each time a unit has been summoned
-		}
+                // Character number 10 is always a SSR
+                if (t_confirm != "Main")
+                {
+                        if (step == 9)
+                        {
+                                if (t_pity == 150)
+                                {
+                                        character = gettingPITY();  // Call a featured unit
+                                        amount_Featured++;
+                                        unitsArray[step] = character;
+                                        boxAmount++;            // increase the player's box each time a unit has been summoned
+                                }
+                                else
+                                {
+                                        character = gettingSSR();
+                                        unitsArray[step] = character;
+                                        boxAmount++;            // increase the player's box each time a unit has been summoned
+                                        amount_ssr++;
+                                }
+                        }
+                }
+                else if (step == 9 && t_confirm != "Main")
+                {
+                        character = gettingMAIN();              // Call the main unit
+                        amount_main++;
+                        unitsArray[step] = character;
+                        boxAmount++;            // increase the player's box each time a unit has been summoned
+                }
 
-		
-		// Display the result of the summon
-		std::cout << "Summon result--> " << character << std::endl;
-	}
 
-	// Add a gap and display the amount of units the user got in a summury version
-	std::cout << std::endl <<
-		"Amount of Main unit: " << amount_main << std::endl <<
-		"Amount of Fetured Unit: " << amount_Featured << std::endl <<
-		"Amount of SSR: " << amount_ssr << std::endl <<
-		"Amount of SR: " << amount_sr << std::endl <<
-		"Amount of R: " << amount_r << std::endl;
+                // Display the result of the summon
+                displaySummonResult(step + 1, character);
+        }
 
+        displaySummonResultsFooter();
+
+        // Add a gap and display the amount of units the user got in a summary version
+        displaySummary();
 }
 
 // functions for units
 std::string gettingR()
 {
-	// Set the units ready to randomly picked
-	std::string r_units[] = { "R - Goku", "R - vegeta", "R - Piccolo", "R - Bulma", "R - Trunks", "R - Goten", "R - Gohan", "R - Master roshi", "R - Yamcha",
-							"R - Tien", "R - Nappa", "R - Radits", "R - Frieza", "R - Android 16", "R - Android 17", "R - Android 18", "R - Android 19", "R - Dr. Gero", "R - Chichi" };
+        // Set the units ready to randomly picked
+        std::string r_units[] = { "R - Goku", "R - vegeta", "R - Piccolo", "R - Bulma", "R - Trunks", "R - Goten", "R - Gohan",
+"R - Master roshi", "R - Yamcha",
+                                                        "R - Tien", "R - Nappa", "R - Radits", "R - Frieza", "R - Android 16", "R - Android 17", "R - Android 18", "R - Android 19", "R - Dr. Gero", "R - Chichi" };
 
-	// Pick the random unit
-	int r_unit_generated = rand() % 19;
+        // Pick the random unit
+        int r_unit_generated = rand() % 19;
 
-	// Return the unit 
-	return r_units[r_unit_generated];
+        // Return the unit
+        return r_units[r_unit_generated];
 }
 
 std::string gettingSR()
 {
-	// Set the units ready to randomly picked
-	std::string sr_units[] = { "SR - vegeta", "SR - Super Saiyan Goku", "SR - King Piccolo", "SR - Yamcha", "SR - Cooler", "SR - Super Saiyan Trunks (kid)", "SR - Pan (Gt)",
-								"SR - Super Saiyan Vegeta", "SR - Piccolo (Fused)", "SR - Android 13", "SR - Mai", "SR - Gohan", "SR - trunks (teen)(Future)", "SR - Gotenks", "SR - Goku", "SR - Super Saiyan 2 Goku", "SR - Krillin",
-								"SR - Kami", "SR - Mr. Popo", "SR - Android 19", "SR - Android 16", "SR - Cell (1st From)", "SR - Dodoria", "SR - Zarbon", "SR - Frieza (2nd form)" };
+        // Set the units ready to randomly picked
+        std::string sr_units[] = { "SR - vegeta", "SR - Super Saiyan Goku", "SR - King Piccolo", "SR - Yamcha", "SR - Cooler", "SR - Super Saiyan Trunks (kid)", "SR - Pan (Gt)",
+                                                                "SR - Super Saiyan Vegeta", "SR - Piccolo (Fused)", "SR - Android 13", "SR - Mai", "SR - Gohan", "SR - trunks (teen)(Future)", "SR - Gotenks", "SR - Goku", "SR - Super Saiyan 2 Goku", "SR - Krillin",
+                                                                "SR - Kami", "SR - Mr. Popo", "SR - Android 19", "SR - Android 16", "SR - Cell (1st From)", "SR - Dodoria", "SR - Zarbon", "SR - Frieza (2nd form)" };
 
-	// Pick the random unit
-	int sr_unit_generated = rand() % 25;
+        // Pick the random unit
+        int sr_unit_generated = rand() % 25;
 
-	// Return the unit 
-	return sr_units[sr_unit_generated];
+        // Return the unit
+        return sr_units[sr_unit_generated];
 }
 
 std::string gettingSSR()
 {
-	const std::string RED = "\033[31m";
-	const std::string GREEN = "\033[32m";
-	const std::string BLUE = "\033[34m";
-	const std::string PURPLE = "\033[35m";			// Colour to assossiate with the units
-	const std::string RESET = "\033[0m";
+        const std::string RED = "\033[31m";
+        const std::string GREEN = "\033[32m";
+        const std::string BLUE = "\033[34m";
+        const std::string PURPLE = "\033[35m";                  // Colour to assossiate with the units
+        const std::string RESET = "\033[0m";
 
-	// Set the units ready to randomly picked
-	std::string ssr_units[] = { "*SSR* - vegeta", "*SSR* - Goku", "*SSR* - Gohan", "*SSR* - Goten (Gt)", "*SSR* - Vegeta (Gt)", "*SSR* - Goku (Gt)", "*SSR* - Gotenks", "*SSR* - Super Saiyan 3 Gotenks",
-								"*SSR* - Yamcha", "*SSR* - Nappa", "*SSR* - Super Saiyan God Goku", "*SSR* - Super Saiyan God Vegeta", "*SSR* - Gogeta", "*SSR* - Super Saiyan Vegito", "*SSR* - Super Saiyan 2 Gohan (teen)", "*SSR* - Android 17",
-								"*SSR* - Android 16", "*SSR* - Android 18", "*SSR* - Dispo", "*SSR* - Toppo", "*SSR* - Jiren", "*SSR* - Super Saiyan God Super Saiyan Goku", "*SSR* - Ribrian", "*SSR* - Bergamo",
-								"*SSR* - hit", "*SSR* - Frost", "*SSR* - Cabba", "*SSR* - Mageta", "*SSR* - Buu (Kid)", "*SSR* - Super Buu", "*SSR* - Buu (good)", "*SSR* - Buu (Evil)",
-								"*SSR* - Ultimate Gohan", "*SSR* - Piccolo", "*SSR* - Cell (perfect form)", "*SSR* - Cell Jr.", "*SSR* - Super Saiyan God Super Saiyan Vegeta", "*SSR* - Frieza (Final form)", "*SSR* - Radits", "*SSR* - Krillin", };
+        // Set the units ready to randomly picked
+        std::string ssr_units[] = { "*SSR* - vegeta", "*SSR* - Goku", "*SSR* - Gohan", "*SSR* - Goten (Gt)", "*SSR* - Vegeta (Gt)", "*SSR* - Goku (Gt)", "*SSR* - Gotenks", "*SSR* - Super Saiyan 3 Gotenks",
+                                                                "*SSR* - Yamcha", "*SSR* - Nappa", "*SSR* - Super Saiyan God Goku", "*SSR* - Super Saiyan God Vegeta", "*SSR* - Gogeta", "*SSR* - Super Saiyan Vegito", "*SSR* - Super Saiyan 2 Gohan (teen)", "*SSR* - Android 17",
+                                                                "*SSR* - Android 16", "*SSR* - Android 18", "*SSR* - Dispo", "*SSR* - Toppo", "*SSR* - Jiren", "*SSR* - Super Saiyan God Super Saiyan Goku", "*SSR* - Ribrian", "*SSR* - Bergamo",
+                                                                "*SSR* - hit", "*SSR* - Frost", "*SSR* - Cabba", "*SSR* - Mageta", "*SSR* - Buu (Kid)", "*SSR* - Super Buu", "*SSR* - Buu (good)", "*SSR* - Buu (Evil)",
+                                                                "*SSR* - Ultimate Gohan", "*SSR* - Piccolo", "*SSR* - Cell (perfect form)", "*SSR* - Cell Jr.", "*SSR* - Super Saiyan God Super Saiyan Vegeta", "*SSR* - Frieza (Final form)", "*SSR* - Radits", "*SSR* - Krillin", };
 
 
-	// List of featured units on the TEQ Buhan banner
-	std::string ssr_feature[] = { GREEN + "*DOOKAN FEST* TEQ Super Buu (Gohan Absorbed)" + RESET , RED + "*DOOKAN FEST* STR Master Roshi" + RESET , BLUE + "*DOOKAN FEST* AGL Frieza (1st Form)" + RESET ,
-									RED + "*DOOKAN FEST* STR Android #17 & Hell Fighter #17" + RESET , PURPLE + "*DOOKAN FEST* INT Majin Vegeta" + RESET , GREEN + "*DOOKAN FEST* TEQ Super Saiyan 2 Vegeta" + RESET ,
-									PURPLE + "*DOOKAN FEST* INT Super Saiyan 2 Goku" + RESET , RED + "*DOOKAN FEST* STR Super Buu" + RESET, PURPLE + "*DOOKAN FEST* INT Ultimate Gohan" + RESET };
+        // List of featured units on the TEQ Buhan banner
+        std::string ssr_feature[] = { GREEN + "*DOOKAN FEST* TEQ Super Buu (Gohan Absorbed)" + RESET , RED + "*DOOKAN FEST* STR Master Roshi" + RESET , BLUE + "*DOOKAN FEST* AGL Frieza (1st Form)" + RESET ,
+                                                                        RED + "*DOOKAN FEST* STR Android #17 & Hell Fighter #17" + RESET , PURPLE + "*DOOKAN FEST* INT Majin Vegeta" + RESET , GREEN + "*DOOKAN FEST* TEQ Super Saiyan 2 Vegeta" + RESET ,
+                                                                        PURPLE + "*DOOKAN FEST* INT Super Saiyan 2 Goku" + RESET , RED + "*DOOKAN FEST* STR Super Buu" + RESET, PURPLE + "*DOOKAN FEST* INT Ultimate Gohan" + RESET };
 
-	// Pick the random unit
-	int ssr_unit_generated = rand() % 40;
-	int ssr_unit_featured_generated = rand() % 9;
+        // Pick the random unit
+        int ssr_unit_generated = rand() % 40;
+        int ssr_unit_featured_generated = rand() % 9;
 
-	// If the user got a featured or not
-	int probability = (rand() % 100) + 1;
+        // If the user got a featured or not
+        int probability = (rand() % 100) + 1;
 
-	if (probability >= 1 && probability <= 94)
-	{
-		// Return the unit
-		return ssr_units[ssr_unit_generated];
-	}
-	else
-	{
-		if (ssr_feature[ssr_unit_featured_generated] == ssr_feature[0])
-		{
-			amount_main++;
-		}
-		// Return the unit 
-		return ssr_feature[ssr_unit_featured_generated];
-	}
+        if (probability >= 1 && probability <= 94)
+        {
+                // Return the unit
+                return ssr_units[ssr_unit_generated];
+        }
+        else
+        {
+                if (ssr_feature[ssr_unit_featured_generated] == ssr_feature[0])
+                {
+                        amount_main++;
+                }
+                // Return the unit
+                return ssr_feature[ssr_unit_featured_generated];
+        }
 }
 
 
@@ -307,26 +384,26 @@ std::string gettingSSR()
 std::string gettingPITY()
 {
 
-	const std::string RED = "\033[31m";
-	const std::string GREEN = "\033[32m";
-	const std::string BLUE = "\033[34m";
-	const std::string PURPLE = "\033[35m";			// Colour to assossiate with the units
-	const std::string RESET = "\033[0m";
+        const std::string RED = "\033[31m";
+        const std::string GREEN = "\033[32m";
+        const std::string BLUE = "\033[34m";
+        const std::string PURPLE = "\033[35m";                  // Colour to assossiate with the units
+        const std::string RESET = "\033[0m";
 
 
-	std::string ssr_feature[] = { GREEN + "*DOOKAN FEST* TEQ Super Buu (Gohan Absorbed)" + RESET , RED + "*DOOKAN FEST* STR Master Roshi" + RESET , BLUE + "*DOOKAN FEST* AGL Frieza (1st Form)" + RESET ,
-									RED + "*DOOKAN FEST* STR Android #17 & Hell Fighter #17" + RESET , PURPLE + "*DOOKAN FEST* INT Majin Vegeta" + RESET , GREEN + "*DOOKAN FEST* TEQ Super Saiyan 2 Vegeta" + RESET ,
-									PURPLE + "*DOOKAN FEST* INT Super Saiyan 2 Goku" + RESET , RED + "*DOOKAN FEST* STR Super Buu" + RESET, PURPLE + "*DOOKAN FEST* INT Ultimate Gohan" + RESET };
+        std::string ssr_feature[] = { GREEN + "*DOOKAN FEST* TEQ Super Buu (Gohan Absorbed)" + RESET , RED + "*DOOKAN FEST* STR Master Roshi" + RESET , BLUE + "*DOOKAN FEST* AGL Frieza (1st Form)" + RESET ,
+                                                                        RED + "*DOOKAN FEST* STR Android #17 & Hell Fighter #17" + RESET , PURPLE + "*DOOKAN FEST* INT Majin Vegeta" + RESET , GREEN + "*DOOKAN FEST* TEQ Super Saiyan 2 Vegeta" + RESET ,
+                                                                        PURPLE + "*DOOKAN FEST* INT Super Saiyan 2 Goku" + RESET , RED + "*DOOKAN FEST* STR Super Buu" + RESET, PURPLE + "*DOOKAN FEST* INT Ultimate Gohan" + RESET };
 
-	// Pick the random unit
-	int ssr_unit_featured_generated = rand() % 9;
+        // Pick the random unit
+        int ssr_unit_featured_generated = rand() % 9;
 
-	if (ssr_feature[ssr_unit_featured_generated] == ssr_feature[0])
-	{
-		amount_main++;
-	}
-	// return the featured unit to the function
-	return ssr_feature[ssr_unit_featured_generated];
+        if (ssr_feature[ssr_unit_featured_generated] == ssr_feature[0])
+        {
+                amount_main++;
+        }
+        // return the featured unit to the function
+        return ssr_feature[ssr_unit_featured_generated];
 }
 
 
@@ -337,34 +414,36 @@ std::string gettingPITY()
 std::string gettingMAIN()
 {
 
-	const std::string GREEN = "\033[32m";			// Colour to assossiate with the units
-	const std::string RESET = "\033[0m";
+        const std::string GREEN = "\033[32m";                   // Colour to assossiate with the units
+        const std::string RESET = "\033[0m";
 
 
-	std::string ssr_feature[] = { GREEN + "*DOOKAN FEST* TEQ Super Buu (Gohan Absorbed)" + RESET };
+        std::string ssr_feature[] = { GREEN + "*DOOKAN FEST* TEQ Super Buu (Gohan Absorbed)" + RESET };
 
-	// Pick the random unit
-	int ssr_unit_featured_generated = rand() % 1;
+        // Pick the random unit
+        int ssr_unit_featured_generated = rand() % 1;
 
-	// return the featured unit to the function
-	return ssr_feature[ssr_unit_featured_generated];
+        // return the featured unit to the function
+        return ssr_feature[ssr_unit_featured_generated];
 }
 
 void playerBox()
 {
-	const std::string RED = "\033[31m";
-	const std::string GREEN = "\033[32m";
-	const std::string BLUE = "\033[34m";
-	const std::string PURPLE = "\033[35m";			// Colour to assossiate with the units
-	const std::string RESET = "\033[0m";
+        const std::string CYAN = "\033[36m";
+        const std::string RESET = "\033[0m";
 
-	// variables
-	std::string erase = "";
-
-	std::cout << "-----------This is your box-----------" << std::endl;
-
-	for (int index = 0; index < boxAmount; index++)
-	{
-		std::cout << unitsArray[index] << std::endl;
-	}
+        std::cout << CYAN;
+        std::cout << "\n╔══════════════════════════════ Player Box ═══════════════════════════════╗" << std::endl;
+        if (boxAmount == 0)
+        {
+                std::cout << "║  Your box is currently empty. Summon some heroes!                      ║" << std::endl;
+        }
+        else
+        {
+                for (int index = 0; index < boxAmount; index++)
+                {
+                        std::cout << "║  " << std::setw(3) << (index + 1) << ". " << RESET << unitsArray[index] << CYAN << std::endl;
+                }
+        }
+        std::cout << "╚═══════════════════════════════════════════════════════════════════════╝" << RESET << std::endl;
 }
